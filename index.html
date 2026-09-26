@@ -5,146 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ese día me convertí en un Chevy Pop verde lima y mi vecina me usa de Uber</title>
     <style>
-        :root {
-            --bg-color: #000000;
-            --panel-bg: #111111;
-            --text-color: #ffffff;
-            --border-color: #ffffff;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: "Courier New", Courier, monospace;
             margin: 0;
-            padding: 0;
+            padding: 10px;
         }
 
-        header {
-            text-align: center;
-            padding: 20px;
-            background: #000;
-            border-bottom: 3px solid var(--border-color);
-        }
-
-        .banner-container {
-            max-width: 900px;
+        .main-table {
+            width: 700px;
             margin: 0 auto;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+        }
+
+        .header-cell {
+            text-align: center;
+            background-color: #000000;
+            padding: 10px;
         }
 
         .banner-container img {
             width: 100%;
             height: auto;
-            border: 2px solid var(--border-color);
-            filter: grayscale(100%);
+            border: 1px solid #ffffff;
+            /* La imagen se deja exactamente como la pediste, sin filtros */
         }
 
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
+        .marquee-container {
+            background-color: #000000;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 4px;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid #000000;
+        }
+
+        .content-cell {
             padding: 20px;
-            background-color: var(--panel-bg);
-            border: 2px solid var(--border-color);
+            background-color: #ffffff;
         }
 
         h1 {
-            color: var(--text-color);
-            font-size: 1.5rem;
+            font-size: 18px;
             text-align: center;
-            letter-spacing: 2px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 10px;
+            text-decoration: underline;
+            margin-top: 0;
         }
 
-        .episode-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .episode-list li {
-            margin: 15px 0;
+        .retro-box {
+            border: 2px solid #000000;
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-bottom: 15px;
         }
 
         .episode-btn {
             display: block;
             width: 100%;
-            padding: 12px;
-            background-color: #000000;
-            color: var(--text-color);
-            border: 2px solid var(--border-color);
+            padding: 8px;
+            background-color: #e0e0e0;
+            color: #000000;
+            border: 2px outset #ffffff;
             text-align: left;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.1rem;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            font-size: 14px;
             cursor: pointer;
             text-decoration: none;
-            transition: 0.1s;
+            box-sizing: border-box;
+        }
+
+        .episode-btn:active {
+            border-style: inset;
         }
 
         .episode-btn:hover {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: bold;
+            background-color: #000000;
+            color: #ffffff;
         }
 
         #reader-container {
-            margin-top: 20px;
-            padding: 20px;
-            background: #000000;
-            border: 2px solid var(--border-color);
+            margin-top: 15px;
+            padding: 15px;
+            background: #ffffff;
+            border: 2px inset #000000;
             display: none;
             white-space: pre-wrap;
-            font-family: 'Courier New', Courier, monospace;
-            color: #ffffff;
-            max-height: 400px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 13px;
+            max-height: 350px;
             overflow-y: auto;
         }
 
         footer {
             text-align: center;
-            padding: 20px;
-            font-size: 0.8rem;
-            color: #888888;
-            border-top: 1px solid #333333;
-            margin-top: 40px;
+            font-size: 11px;
+            padding: 10px;
+            border-top: 1px dashed #000000;
+            margin-top: 20px;
+        }
+
+        .counter {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            background: #000;
+            color: #fff;
+            display: inline-block;
+            padding: 2px 6px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="banner-container">
-            <!-- Banner oficial cargado desde GitHub (convertido a escala de grises para mantener el tema) -->
-            <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
-        </div>
-    </header>
+    <table class="main-table" align="center" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="header-cell">
+                <div class="banner-container">
+                    <!-- Imagen original sin modificar -->
+                    <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="marquee-container">
+                    *** BIENVENIDOS AL FORO OFICIAL DEL ANIME DEL CHEVY POP ***
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="content-cell">
+                <h1>ÍNDICE DE EPISODIOS</h1>
+                
+                <div class="retro-box">
+                    <p style="margin: 0 0 10px 0; font-size: 13px;">Selecciona un episodio para leerlo directamente en el sistema:</p>
+                    <button class="episode-btn" onclick="cargarEpisodio('EP/carroviolador.txt')">
+                        &gt;&gt; [EP 1] Carro Violador
+                    </button>
+                </div>
 
-    <div class="container">
-        <h1>EPISODIOS DISPONIBLES</h1>
-        <ul class="episode-list">
-            <li>
-                <button class="episode-btn" onclick="cargarEpisodio('EP/carroviolador.txt')">
-                    [EP 1] Carro Violador
-                </button>
-            </li>
-        </ul>
+                <div id="reader-container"></div>
 
-        <div id="reader-container"></div>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 - Todos los derechos reservados al Chevy Pop.</p>
-    </footer>
+                <div style="text-align: center;">
+                    <div class="counter">VISITAS: 000069</div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <footer>
+                    <p>&copy; 1996-2006 Foro Chevy Pop Net. Optimizado para Netscape Navigator e Internet Explorer 4.0</p>
+                </footer>
+            </td>
+        </tr>
+    </table>
 
     <script>
         function cargarEpisodio(url) {
             const reader = document.getElementById('reader-container');
             reader.style.display = 'block';
-            reader.innerText = 'Cargando episodio...';
+            reader.innerText = 'Cargando archivo de texto...';
 
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('No se pudo cargar el archivo del episodio.');
+                        throw new Error('No se pudo encontrar el archivo en la carpeta EP/');
                     }
                     return response.text();
                 })
@@ -152,7 +182,7 @@
                     reader.innerText = data;
                 })
                 .catch(error => {
-                    reader.innerText = 'Error al cargar el episodio: ' + error.message;
+                    reader.innerText = 'Error: ' + error.message;
                 });
         }
     </script>
