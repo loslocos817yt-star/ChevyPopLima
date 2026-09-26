@@ -65,6 +65,7 @@
             display: block;
             width: 100%;
             padding: 8px;
+            margin-bottom: 5px;
             background-color: #e0e0e0;
             color: #000000;
             border: 2px outset #ffffff;
@@ -75,7 +76,6 @@
             cursor: pointer;
             text-decoration: none;
             box-sizing: border-box;
-            margin-bottom: 8px;
         }
 
         .episode-btn:active {
@@ -126,7 +126,6 @@
         <tr>
             <td class="header-cell">
                 <div class="banner-container">
-                    <!-- Imagen original sin modificar -->
                     <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
                 </div>
             </td>
@@ -144,8 +143,12 @@
                 
                 <div class="retro-box">
                     <p style="margin: 0 0 10px 0; font-size: 13px;">Selecciona un episodio para leerlo directamente en el sistema:</p>
-                    <!-- Aquí se cargarán los episodios desde el JSON de forma automática -->
-                    <div id="lista-episodios">Cargando episodios...</div>
+                    
+                    <!-- Aquí se cargarán los botones de los episodios desde el JSON -->
+                    <div id="lista-episodios">
+                        <p style="font-style: italic; font-size: 12px;">Cargando base de datos...</p>
+                    </div>
+
                 </div>
 
                 <div id="reader-container"></div>
@@ -158,46 +161,49 @@
         <tr>
             <td>
                 <footer>
-                    <p>&copy; Preparen el Cloro.</p>
+                    <p>&copy; Preparen el Cloro. </p>
                 </footer>
             </td>
         </tr>
     </table>
 
     <script>
-        // Cargar los episodios dinámicamente desde el archivo JSON en GitHub
-        fetch('EP/episodios.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('No se pudo cargar el archivo episodios.json');
-                }
-                return response.json();
-            })
-            .then(episodios => {
-                const contenedor = document.getElementById('lista-episodios');
-                contenedor.innerHTML = ''; // Limpiar texto de carga
+        // URL de tu JSON crudo en GitHub
+        const jsonUrl = 'https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/EP/episodios.json';
 
-                episodios.forEach(ep => {
-                    const btn = document.createElement('button');
-                    btn.className = 'episode-btn';
-                    btn.innerHTML = `&gt;&gt; [EP ${ep.num}] ${ep.EP}`;
-                    btn.onclick = () => cargarEpisodio(ep.link);
-                    contenedor.appendChild(btn);
+        // Cargar la lista de episodios al abrir la página
+        window.onload = function() {
+            fetch(jsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const contenedorLista = document.getElementById('lista-episodios');
+                    contenedorLista.innerHTML = ''; // Limpiamos el mensaje de "Cargando"
+
+                    // Recorremos el JSON y creamos un botón por cada episodio
+                    data.forEach(episodio => {
+                        const boton = document.createElement('button');
+                        boton.className = 'episode-btn';
+                        boton.onclick = function() { cargarEpisodio(episodio.link); };
+                        boton.innerHTML = `&gt;&gt; [EP ${episodio.num}] ${episodio.EP}`;
+                        contenedorLista.appendChild(boton);
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('lista-episodios').innerHTML = '<p style="color: red;">Error al conectar con el servidor.</p>';
+                    console.error('Error cargando el JSON:', error);
                 });
-            })
-            .catch(error => {
-                document.getElementById('lista-episodios').innerText = 'Error al cargar la lista de episodios: ' + error.message;
-            });
+        };
 
+        // Función para leer el archivo .txt del episodio
         function cargarEpisodio(url) {
             const reader = document.getElementById('reader-container');
             reader.style.display = 'block';
-            reader.innerText = 'Cargando archivo de texto...';
+            reader.innerText = 'Descifrando texto...';
 
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('No se pudo encontrar el archivo de texto.');
+                        throw new Error('Archivo corrupto o eliminado por el gobierno.');
                     }
                     return response.text();
                 })
