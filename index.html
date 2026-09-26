@@ -30,7 +30,6 @@
             width: 100%;
             height: auto;
             border: 1px solid #ffffff;
-            /* La imagen se deja exactamente como la pediste, sin filtros */
         }
 
         .marquee-container {
@@ -76,6 +75,7 @@
             cursor: pointer;
             text-decoration: none;
             box-sizing: border-box;
+            margin-bottom: 8px;
         }
 
         .episode-btn:active {
@@ -144,9 +144,8 @@
                 
                 <div class="retro-box">
                     <p style="margin: 0 0 10px 0; font-size: 13px;">Selecciona un episodio para leerlo directamente en el sistema:</p>
-                    <button class="episode-btn" onclick="cargarEpisodio('EP/carroviolador.txt')">
-                        &gt;&gt; [EP 1] Carro Violador
-                    </button>
+                    <!-- Aquí se cargarán los episodios desde el JSON de forma automática -->
+                    <div id="lista-episodios">Cargando episodios...</div>
                 </div>
 
                 <div id="reader-container"></div>
@@ -159,13 +158,37 @@
         <tr>
             <td>
                 <footer>
-                    <p>&copy; Preparen el Cloro. </p>
+                    <p>&copy; Preparen el Cloro.</p>
                 </footer>
             </td>
         </tr>
     </table>
 
     <script>
+        // Cargar los episodios dinámicamente desde el archivo JSON en GitHub
+        fetch('EP/episodios.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el archivo episodios.json');
+                }
+                return response.json();
+            })
+            .then(episodios => {
+                const contenedor = document.getElementById('lista-episodios');
+                contenedor.innerHTML = ''; // Limpiar texto de carga
+
+                episodios.forEach(ep => {
+                    const btn = document.createElement('button');
+                    btn.className = 'episode-btn';
+                    btn.innerHTML = `&gt;&gt; [EP ${ep.num}] ${ep.EP}`;
+                    btn.onclick = () => cargarEpisodio(ep.link);
+                    contenedor.appendChild(btn);
+                });
+            })
+            .catch(error => {
+                document.getElementById('lista-episodios').innerText = 'Error al cargar la lista de episodios: ' + error.message;
+            });
+
         function cargarEpisodio(url) {
             const reader = document.getElementById('reader-container');
             reader.style.display = 'block';
@@ -174,7 +197,7 @@
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('No se pudo encontrar el archivo en la carpeta EP/');
+                        throw new Error('No se pudo encontrar el archivo de texto.');
                     }
                     return response.text();
                 })
