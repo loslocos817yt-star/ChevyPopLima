@@ -13,6 +13,45 @@
             padding: 10px;
         }
 
+        /* ESTILOS DEL MODAL DE IDIOMA (ESTILO BIOS 90s) */
+        #language-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            z-index: 9999;
+            text-align: center;
+            padding-top: 50px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #language-modal h2 {
+            text-decoration: underline;
+            margin-bottom: 30px;
+        }
+
+        .lang-btn {
+            display: block;
+            width: 250px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .lang-btn:hover {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        /* ESTILOS DE LA PÁGINA NORMAL */
         .main-table {
             width: 700px;
             max-width: 100%;
@@ -123,95 +162,183 @@
 </head>
 <body>
 
-    <table class="main-table" align="center" cellspacing="0" cellpadding="0">
-        <tr>
-            <td class="header-cell">
-                <div class="banner-container">
-                    <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="marquee-container">
-                   BIENVENIDOS A LA PAGINA WEB DE LA HISTORIA MAS PENDEJA DEL MUNDO.
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="content-cell">
-                <h1>ÍNDICE DE EPISODIOS</h1>
-                
-                <div class="retro-box">
-                    <p style="margin: 0 0 10px 0; font-size: 13px;">Selecciona un episodio para leerlo directamente en el sistema:</p>
-                    
-                    <div id="lista-episodios">
-                        <p style="font-style: italic; font-size: 12px;">Cargando base de datos...</p>
+    <!-- MODAL DE SELECCIÓN DE IDIOMA -->
+    <div id="language-modal">
+        <h2>=== SYSTEM LANGUAGE SETUP ===</h2>
+        <p>Selecciona tu idioma / Select your language</p>
+        <div id="lang-buttons"></div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="main-content" style="display: none;">
+        <table class="main-table" align="center" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="header-cell">
+                    <div class="banner-container">
+                        <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
                     </div>
-                </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="marquee-container" data-translate="BIENVENIDOS A LA PAGINA WEB DE LA HISTORIA MAS PENDEJA DEL MUNDO.">
+                       BIENVENIDOS A LA PAGINA WEB DE LA HISTORIA MAS PENDEJA DEL MUNDO.
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="content-cell">
+                    <h1 data-translate="ÍNDICE DE EPISODIOS">ÍNDICE DE EPISODIOS</h1>
+                    
+                    <div class="retro-box">
+                        <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona un episodio para leerlo directamente en el sistema:">Selecciona un episodio para leerlo directamente en el sistema:</p>
+                        
+                        <div id="lista-episodios">
+                            <p style="font-style: italic; font-size: 12px;" data-translate="Cargando base de datos...">Cargando base de datos...</p>
+                        </div>
+                    </div>
 
-                <!-- Contenedor nativo que no es bloqueado por GitHub -->
-                <div id="reader-container"></div>
+                    <div id="reader-container"></div>
 
-                <div style="text-align: center;">
-                    <div class="counter">VISITAS: 000069</div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <footer>
-                    <p>&copy; Preparen el Cloro. </p>
-                </footer>
-            </td>
-        </tr>
-    </table>
+                    <div style="text-align: center;">
+                        <div class="counter" data-translate="VISITAS: 000069">VISITAS: 000069</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <footer>
+                        <p data-translate="© Preparen el Cloro.">© Preparen el Cloro.</p>
+                        <button onclick="resetearIdioma()" style="margin-top: 10px; font-size: 10px; cursor: pointer;">Cambiar Idioma</button>
+                    </footer>
+                </td>
+            </tr>
+        </table>
+    </div>
 
     <script>
-        // Usamos una ruta relativa para el JSON porque tu página ya está alojada en el mismo repositorio
+        // Diccionario de idiomas solicitados
+        const idiomas = {
+            'es': 'Español',
+            'en': 'Inglés',
+            'ru': 'Ruso',
+            'pt': 'Portugués',
+            'zh-CN': 'Chino',
+            'ja': 'Japonés',
+            'ko': 'Coreano',
+            'de': 'Alemán',
+            'nah': 'Náhuatl',
+            'yua': 'Maya',
+            'hi': 'Indio (Hindi)'
+        };
+
         const jsonUrl = 'EP/episodios.json';
+        let currentLang = 'es';
+
+        // Función mágica que usa la API oculta de Google Translate
+        async function traducirTexto(texto, targetLang) {
+            if (targetLang === 'es') return texto; // Si es español, no hace nada
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${targetLang}&dt=t&q=${encodeURIComponent(texto)}`;
+            try {
+                const res = await fetch(url);
+                const json = await res.json();
+                return json[0].map(item => item[0]).join('');
+            } catch (e) {
+                console.error("Error traduciendo:", e);
+                return texto; // Si falla, devuelve el texto original
+            }
+        }
 
         window.onload = function() {
+            // Revisar si ya hay un idioma guardado en el "localhost" (localStorage)
+            const guardado = localStorage.getItem('idiomaChevy');
+            if (!guardado) {
+                mostrarSelectorIdioma();
+            } else {
+                iniciarPagina(guardado);
+            }
+        };
+
+        function mostrarSelectorIdioma() {
+            const modal = document.getElementById('language-modal');
+            const contenedorBotones = document.getElementById('lang-buttons');
+            contenedorBotones.innerHTML = '';
+
+            for (const [codigo, nombre] of Object.entries(idiomas)) {
+                const btn = document.createElement('button');
+                btn.className = 'lang-btn';
+                btn.innerText = `[ ${nombre} ]`;
+                btn.onclick = () => {
+                    localStorage.setItem('idiomaChevy', codigo);
+                    modal.style.display = 'none';
+                    iniciarPagina(codigo);
+                };
+                contenedorBotones.appendChild(btn);
+            }
+            modal.style.display = 'block';
+        }
+
+        async function iniciarPagina(lang) {
+            currentLang = lang;
+            document.getElementById('main-content').style.display = 'block';
+
+            // Traducir toda la interfaz (UI)
+            const elementosATraducir = document.querySelectorAll('[data-translate]');
+            for (let el of elementosATraducir) {
+                const textoOriginal = el.getAttribute('data-translate');
+                el.innerText = await traducirTexto(textoOriginal, currentLang);
+            }
+
+            // Cargar los episodios y traducirlos
             fetch(jsonUrl)
                 .then(response => {
-                    if (!response.ok) throw new Error('No se pudo encontrar episodios.json');
+                    if (!response.ok) throw new Error('No se encontró episodios.json');
                     return response.json();
                 })
-                .then(data => {
+                .then(async data => {
                     const contenedorLista = document.getElementById('lista-episodios');
                     contenedorLista.innerHTML = ''; 
 
-                    data.forEach(episodio => {
+                    for (const episodio of data) {
+                        const tituloTraducido = await traducirTexto(episodio.EP, currentLang);
                         const boton = document.createElement('button');
                         boton.className = 'episode-btn';
                         boton.onclick = function() { cargarEpisodio(episodio.link); };
-                        boton.innerHTML = `&gt;&gt; [EP ${episodio.num}] ${episodio.EP}`;
+                        boton.innerHTML = `&gt;&gt; [EP ${episodio.num}] ${tituloTraducido}`;
                         contenedorLista.appendChild(boton);
-                    });
+                    }
                 })
                 .catch(error => {
                     document.getElementById('lista-episodios').innerHTML = '<p style="color: red;">Error cargando los capítulos.</p>';
                 });
-        };
+        }
 
-        function cargarEpisodio(url) {
+        async function cargarEpisodio(url) {
             const reader = document.getElementById('reader-container');
             reader.style.display = 'block';
-            reader.innerText = 'Cargando texto...';
+            reader.innerText = await traducirTexto('Descargando archivo clasificado...', currentLang);
 
             fetch(url)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('No se encontró el archivo. Revisa que el nombre coincida exactamente (mayúsculas/minúsculas).');
-                    }
+                    if (!response.ok) throw new Error('Archivo no encontrado.');
                     return response.text();
                 })
-                .then(data => {
-                    reader.innerText = data;
+                .then(async data => {
+                    reader.innerText = await traducirTexto('Traduciendo texto...', currentLang);
+                    // Aquí ocurre la magia: traduce el cuento completo de Carlos
+                    const textoTraducido = await traducirTexto(data, currentLang);
+                    reader.innerText = textoTraducido;
                 })
                 .catch(error => {
                     reader.innerText = 'Error: ' + error.message;
                 });
+        }
+
+        function resetearIdioma() {
+            localStorage.removeItem('idiomaChevy');
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('reader-container').style.display = 'none';
+            mostrarSelectorIdioma();
         }
     </script>
 
