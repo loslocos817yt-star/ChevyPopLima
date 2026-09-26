@@ -6,11 +6,10 @@
     <title>Ese día me convertí en un Chevy Pop verde lima y mi vecina me usa de Uber</title>
     <style>
         :root {
-            --bg-color: #0b0f0b;
-            --panel-bg: #141c14;
-            --neon-green: #39ff14;
-            --text-color: #e0e0e0;
-            --accent-green: #2ecc71;
+            --bg-color: #000000;
+            --panel-bg: #111111;
+            --text-color: #ffffff;
+            --border-color: #ffffff;
         }
 
         body {
@@ -25,7 +24,7 @@
             text-align: center;
             padding: 20px;
             background: #000;
-            border-bottom: 3px solid var(--neon-green);
+            border-bottom: 3px solid var(--border-color);
         }
 
         .banner-container {
@@ -36,8 +35,8 @@
         .banner-container img {
             width: 100%;
             height: auto;
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+            border: 2px solid var(--border-color);
+            filter: grayscale(100%);
         }
 
         .container {
@@ -45,15 +44,16 @@
             margin: 30px auto;
             padding: 20px;
             background-color: var(--panel-bg);
-            border: 1px solid var(--accent-green);
-            box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+            border: 2px solid var(--border-color);
         }
 
         h1 {
-            color: var(--neon-green);
+            color: var(--text-color);
             font-size: 1.5rem;
             text-align: center;
-            text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+            letter-spacing: 2px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
         }
 
         .episode-list {
@@ -62,39 +62,39 @@
         }
 
         .episode-list li {
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .episode-btn {
             display: block;
             width: 100%;
             padding: 12px;
-            background-color: #1a261a;
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
+            background-color: #000000;
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
             text-align: left;
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.1rem;
             cursor: pointer;
             text-decoration: none;
-            transition: 0.2s;
+            transition: 0.1s;
         }
 
         .episode-btn:hover {
-            background-color: var(--neon-green);
-            color: #000;
-            box-shadow: 0 0 10px var(--neon-green);
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: bold;
         }
 
         #reader-container {
             margin-top: 20px;
-            padding: 15px;
-            background: #080c08;
-            border: 1px dashed var(--accent-green);
+            padding: 20px;
+            background: #000000;
+            border: 2px solid var(--border-color);
             display: none;
             white-space: pre-wrap;
             font-family: 'Courier New', Courier, monospace;
-            color: #fff;
+            color: #ffffff;
             max-height: 400px;
             overflow-y: auto;
         }
@@ -103,7 +103,9 @@
             text-align: center;
             padding: 20px;
             font-size: 0.8rem;
-            color: #777;
+            color: #888888;
+            border-top: 1px solid #333333;
+            margin-top: 40px;
         }
     </style>
 </head>
@@ -111,7 +113,7 @@
 
     <header>
         <div class="banner-container">
-            <!-- Banner oficial cargado desde GitHub -->
+            <!-- Banner oficial cargado desde GitHub (convertido a escala de grises para mantener el tema) -->
             <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
         </div>
     </header>
@@ -121,17 +123,16 @@
         <ul class="episode-list">
             <li>
                 <button class="episode-btn" onclick="cargarEpisodio('EP/carroviolador.txt')">
-                    EP 1: Carro Violador
+                    [EP 1] Carro Violador
                 </button>
             </li>
-            <!-- Aquí puedes agregar más episodios después copiando la estructura -->
         </ul>
 
         <div id="reader-container"></div>
     </div>
 
     <footer>
-        <p>&copy; 2026 PattitexTEC Services - Todos los derechos reservados al Chevy Pop verde lima.</p>
+        <p>&copy; 2026 - Todos los derechos reservados al Chevy Pop.</p>
     </footer>
 
     <script>
@@ -158,4 +159,3 @@
 
 </body>
 </html>
-
