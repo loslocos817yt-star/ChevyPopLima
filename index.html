@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ese día me convertí en un Chevy Pop verde lima y mi vecina me usa de Uber</title>
+    <style>
+        :root {
+            --bg-color: #0b0f0b;
+            --panel-bg: #141c14;
+            --neon-green: #39ff14;
+            --text-color: #e0e0e0;
+            --accent-green: #2ecc71;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #000;
+            border-bottom: 3px solid var(--neon-green);
+        }
+
+        .banner-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--accent-green);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+        }
+
+        h1 {
+            color: var(--neon-green);
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+        }
+
+        .episode-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .episode-list li {
+            margin: 10px 0;
+        }
+
+        .episode-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #1a261a;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .episode-btn:hover {
+            background-color: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        #reader-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #080c08;
+            border: 1px dashed var(--accent-green);
+            display: none;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            color: #fff;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="banner-container">
+            <!-- Banner oficial cargado desde GitHub -->
+            <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/banner.png" alt="Banner del Anime">
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>EPISODIOS DISPONIBLES</h1>
+        <ul class="episode-list">
+            <li>
+                <button class="episode-btn" onclick="cargarEpisodio('EP/carroviolador.txt')">
+                    EP 1: Carro Violador
+                </button>
+            </li>
+            <!-- Aquí puedes agregar más episodios después copiando la estructura -->
+        </ul>
+
+        <div id="reader-container"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 PattitexTEC Services - Todos los derechos reservados al Chevy Pop verde lima.</p>
+    </footer>
+
+    <script>
+        function cargarEpisodio(url) {
+            const reader = document.getElementById('reader-container');
+            reader.style.display = 'block';
+            reader.innerText = 'Cargando episodio...';
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el archivo del episodio.');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    reader.innerText = data;
+                })
+                .catch(error => {
+                    reader.innerText = 'Error al cargar el episodio: ' + error.message;
+                });
+        }
+    </script>
+
+</body>
+</html>
 
