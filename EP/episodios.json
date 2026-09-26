@@ -1,10 +1,12 @@
 [
   {
-   "EP"
-   "link"
+   "EP": 
+   "num":
+   "link":
   },
   {
-    "EP"
-    "link"
+    "EP": "Anexo"
+    "num": "02"
+    "link": "https://github.com/loslocos817yt-star/ChevyPopLima/raw/refs/heads/main/EP/Anexo.txt"
   }
 ]
