@@ -2,26 +2,26 @@
   {
    "EP": "Carro violador",
    "num": "t1/01",
-   "link": "https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/main/EP/carroviolador.txt"
+   "link": "EP/carroviolador.txt"
   },
   {
     "EP": "Anexo",
     "num": "t1/02",
-    "link": "https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/main/EP/Anexo.txt"
+    "link": "EP/Anexo.txt"
   },
   {
     "EP": "Tinaco",
     "num": "t1/03",
-    "link": "https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/main/EP/Tinaco.txt"
+    "link": "EP/Tinaco.txt"
   },
   {
     "EP": "Carlos El Mas Capito",
     "num": "t1/04",
-    "link": "https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/main/EP/CarlosElMasCapito.txt"
+    "link": "EP/CarlosElMasCapito.txt"
   },
   {
     "EP": "Jefrey",
     "num": "t1/05",
-    "link": "https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/main/EP/Jefrey.txt"
+    "link": "EP/Jefrey.txt"
   }
 ]
