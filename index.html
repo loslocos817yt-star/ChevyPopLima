@@ -105,13 +105,13 @@
             margin-bottom: 15px;
         }
 
-        /* ESTILOS BANNERS TEMPORADAS */
+        /* ESTILOS DE LOS BANNERS DE TEMPORADA */
         .season-banner {
             width: 100%;
-            max-width: 400px; /* Tamaño ajustado para que no ocupe toda la pantalla */
+            max-width: 500px;
             cursor: pointer;
             display: block;
-            margin: 15px auto;
+            margin: 15px auto 5px auto;
             border: 2px solid #000000;
             transition: transform 0.1s;
         }
@@ -121,10 +121,11 @@
         }
 
         .season-container {
-            display: none; /* Oculto por defecto */
+            display: none; /* Ocultos por defecto */
             margin-bottom: 20px;
             padding: 10px;
             border: 1px dashed #000000;
+            background-color: #ffffff;
         }
 
         .episode-btn {
@@ -215,19 +216,19 @@
                     <div class="retro-box">
                         <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center;" data-translate="Haz clic en el banner de la temporada para ver los episodios:">Haz clic en el banner de la temporada para ver los episodios:</p>
                         
-                        <!-- CONTENEDOR TEMPORADA 1 -->
+                        <!-- BANNER TEMPORADA 1 -->
                         <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada1.Banner.png" class="season-banner" onclick="toggleSeason('s1')" alt="Temporada 1">
                         <div id="s1" class="season-container">
                             <div id="lista-episodios-t1">
-                                <p style="font-style: italic; font-size: 12px;">Cargando Temporada 1...</p>
+                                <p style="font-style: italic; font-size: 12px;" data-translate="Cargando base de datos...">Cargando base de datos...</p>
                             </div>
                         </div>
 
-                        <!-- CONTENEDOR TEMPORADA 2 -->
+                        <!-- BANNER TEMPORADA 2 -->
                         <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada2.Banner.png" class="season-banner" onclick="toggleSeason('s2')" alt="Temporada 2">
                         <div id="s2" class="season-container">
                             <div id="lista-episodios-t2">
-                                <p style="font-style: italic; font-size: 12px;">Próximamente...</p>
+                                <p style="font-style: italic; font-size: 12px;" data-translate="Próximamente...">Próximamente...</p>
                             </div>
                         </div>
 
@@ -273,7 +274,7 @@
         const jsonUrl = 'EP/episodios.json';
         let currentLang = 'es';
 
-        // Función para mostrar/ocultar temporadas
+        // Función para mostrar/ocultar las listas de episodios al picar el banner
         function toggleSeason(seasonId) {
             const seasonDiv = document.getElementById(seasonId);
             if (seasonDiv.style.display === "none" || seasonDiv.style.display === "") {
@@ -337,7 +338,7 @@
                 el.innerText = await traducirTexto(textoOriginal, currentLang);
             }
 
-            // Cargar los episodios y traducirlos
+            // Cargar los episodios desde el JSON
             fetch(jsonUrl)
                 .then(response => {
                     if (!response.ok) throw new Error('No se encontró episodios.json');
@@ -347,7 +348,7 @@
                     const contenedorT1 = document.getElementById('lista-episodios-t1');
                     const contenedorT2 = document.getElementById('lista-episodios-t2');
                     
-                    // Limpiamos los textos de carga de la T1
+                    // Limpiamos los textos de "Cargando..."
                     contenedorT1.innerHTML = ''; 
 
                     for (const episodio of data) {
@@ -356,17 +357,18 @@
                         boton.className = 'episode-btn';
                         boton.onclick = function() { cargarEpisodio(episodio.link); };
                         
-                        // Extraemos el número final para mostrar (ej: 01, 02)
+                        // Extraemos solo el número final para que se vea limpio (ej: [EP 01])
                         let numEpisodio = episodio.num.split('/')[1] || episodio.num;
-
                         boton.innerHTML = `&gt;&gt; [EP ${numEpisodio}] ${tituloTraducido}`;
                         
-                        // Verificar a qué temporada pertenece según el prefijo "t1" o "t2"
-                        if(episodio.num.startsWith('t1')) {
+                        // Separar los botones dependiendo de si en el JSON dicen "t1/..." o "t2/..."
+                        if (episodio.num.startsWith('t1')) {
                             contenedorT1.appendChild(boton);
                         } else if (episodio.num.startsWith('t2')) {
-                            // En caso de que ya agregues los de la temporada 2
-                            contenedorT2.innerHTML = ''; // Limpiamos el texto de "Próximamente" si hay capis
+                            // Si detecta episodios de la temporada 2, borra el "Próximamente..." y los mete ahí
+                            if (contenedorT2.innerHTML.includes('Próximamente')) {
+                                contenedorT2.innerHTML = ''; 
+                            }
                             contenedorT2.appendChild(boton);
                         }
                     }
@@ -388,7 +390,7 @@
                 })
                 .then(async data => {
                     reader.innerText = await traducirTexto('Traduciendo texto...', currentLang);
-                    // Aquí ocurre la magia: traduce el cuento completo de Carlos
+                    // Traduce el cuento y lo muestra
                     const textoTraducido = await traducirTexto(data, currentLang);
                     reader.innerText = textoTraducido;
                 })
