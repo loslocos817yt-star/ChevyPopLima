@@ -232,9 +232,7 @@
                     <div class="retro-box" id="episodios-box">
                         <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona un episodio para leerlo directamente en el sistema:">Selecciona un episodio para leerlo directamente en el sistema:</p>
                         
-                        <div id="lista-episodios">
-                            <p style="font-style: italic; font-size: 12px;" data-translate="Cargando base de datos...">Cargando base de datos...</p>
-                        </div>
+                        <div id="lista-episodios"></div>
                     </div>
 
                     <div id="reader-container"></div>
@@ -259,6 +257,22 @@
     </div>
 
     <script>
+        // ================== TODO SE CARGA POR RAW DE GITHUB ==================
+        // Así funciona aunque abras el HTML directo desde el celular/Termux.
+        const RAW_BASE = 'https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/';
+
+        // El JSON (no cambia). Si falla el primero, prueba con el link github.com/raw.
+        const JSON_URLS = [
+            RAW_BASE + 'EP/episodios.json',
+            'https://github.com/loslocos817yt-star/ChevyPopLima/raw/refs/heads/main/EP/episodios.json'
+        ];
+
+        // Los "link" del JSON son relativos (EP/Anexo.txt): se convierten a RAW
+        function urlRaw(link) {
+            if (/^https?:\/\//i.test(link)) return link;
+            return RAW_BASE + link.replace(/^\/+/, '');
+        }
+
         // Diccionario de idiomas solicitados
         const idiomas = {
             'es': 'Español',
@@ -274,7 +288,6 @@
             'hi': 'Indio (Hindi)'
         };
 
-        const jsonUrl = 'EP/episodios.json';
         let currentLang = 'es';
 
         // Función mágica que usa la API oculta de Google Translate
@@ -293,7 +306,8 @@
 
         window.onload = function() {
             // Revisar si ya hay un idioma guardado en el "localhost" (localStorage)
-            const guardado = localStorage.getItem('idiomaChevy');
+            let guardado = null;
+            try { guardado = localStorage.getItem('idiomaChevy'); } catch (e) {}
             if (!guardado) {
                 mostrarSelectorIdioma();
             } else {
@@ -311,7 +325,7 @@
                 btn.className = 'lang-btn';
                 btn.innerText = `[ ${nombre} ]`;
                 btn.onclick = () => {
-                    localStorage.setItem('idiomaChevy', codigo);
+                    try { localStorage.setItem('idiomaChevy', codigo); } catch (e) {}
                     modal.style.display = 'none';
                     iniciarPagina(codigo);
                 };
@@ -332,9 +346,24 @@
             }
         }
 
-        // Al picarle a un banner de temporada: carga el JSON y muestra solo los episodios de esa temporada
+        // Descarga episodios.json por RAW (probando cada URL hasta que una funcione)
+        async function cargarJSON() {
+            let ultimoError = new Error('No se pudo cargar episodios.json');
+            for (const url of JSON_URLS) {
+                try {
+                    const response = await fetch(url, { cache: 'no-store' });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return await response.json();
+                } catch (e) {
+                    ultimoError = e;
+                }
+            }
+            throw ultimoError;
+        }
+
+        // Al picarle a un banner de temporada: muestra solo los episodios de esa temporada
         // (el campo "num" del JSON es tipo "t1/01": "t1" = temporada 1)
-        function mostrarTemporada(numTemporada) {
+        async function mostrarTemporada(numTemporada) {
             const prefijo = 't' + numTemporada;
             const cajaEpisodios = document.getElementById('episodios-box');
             const contenedorLista = document.getElementById('lista-episodios');
@@ -349,45 +378,41 @@
             reader.innerText = '';
 
             cajaEpisodios.style.display = 'block';
-            contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">...</p>';
+            contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
+                await traducirTexto('Cargando base de datos...', currentLang) + '</p>';
 
-            fetch(jsonUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('No se encontró episodios.json');
-                    return response.json();
-                })
-                .then(async data => {
-                    contenedorLista.innerHTML = ''; 
+            try {
+                const data = await cargarJSON();
+                contenedorLista.innerHTML = '';
 
-                    const delaTemporada = data.filter(ep => String(ep.num).split('/')[0] === prefijo);
+                const delaTemporada = data.filter(ep => String(ep.num).split('/')[0] === prefijo);
 
-                    if (delaTemporada.length === 0) {
-                        contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
-                            await traducirTexto('Próximamente...', currentLang) + '</p>';
-                        return;
-                    }
+                if (delaTemporada.length === 0) {
+                    contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
+                        await traducirTexto('Próximamente...', currentLang) + '</p>';
+                    return;
+                }
 
-                    for (const episodio of delaTemporada) {
-                        const tituloTraducido = await traducirTexto(episodio.EP, currentLang);
-                        const numero = String(episodio.num).split('/')[1] || episodio.num;
-                        const boton = document.createElement('button');
-                        boton.className = 'episode-btn';
-                        boton.onclick = function() { cargarEpisodio(episodio.link); };
-                        boton.innerHTML = `&gt;&gt; [EP ${numero}] ${tituloTraducido}`;
-                        contenedorLista.appendChild(boton);
-                    }
-                })
-                .catch(error => {
-                    contenedorLista.innerHTML = '<p style="color: red;">Error cargando los capítulos.</p>';
-                });
+                for (const episodio of delaTemporada) {
+                    const tituloTraducido = await traducirTexto(episodio.EP, currentLang);
+                    const numero = String(episodio.num).split('/')[1] || episodio.num;
+                    const boton = document.createElement('button');
+                    boton.className = 'episode-btn';
+                    boton.onclick = function() { cargarEpisodio(episodio.link); };
+                    boton.innerHTML = `&gt;&gt; [EP ${numero}] ${tituloTraducido}`;
+                    contenedorLista.appendChild(boton);
+                }
+            } catch (error) {
+                contenedorLista.innerHTML = '<p style="color: red;">Error cargando los capítulos. (' + error.message + ')</p>';
+            }
         }
 
-        async function cargarEpisodio(url) {
+        async function cargarEpisodio(link) {
             const reader = document.getElementById('reader-container');
             reader.style.display = 'block';
             reader.innerText = await traducirTexto('Descargando archivo clasificado...', currentLang);
 
-            fetch(url)
+            fetch(urlRaw(link), { cache: 'no-store' })
                 .then(response => {
                     if (!response.ok) throw new Error('Archivo no encontrado.');
                     return response.text();
@@ -404,7 +429,7 @@
         }
 
         function resetearIdioma() {
-            localStorage.removeItem('idiomaChevy');
+            try { localStorage.removeItem('idiomaChevy'); } catch (e) {}
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('reader-container').style.display = 'none';
             document.getElementById('episodios-box').style.display = 'none';
@@ -414,4 +439,4 @@
     </script>
 
 </body>
-</html>
+    </html>
