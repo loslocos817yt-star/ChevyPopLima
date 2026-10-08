@@ -105,27 +105,29 @@
             margin-bottom: 15px;
         }
 
-        /* ESTILOS DE LOS BANNERS DE TEMPORADA */
+        /* BANNERS DE TEMPORADA */
         .season-banner {
-            width: 100%;
-            max-width: 500px;
-            cursor: pointer;
             display: block;
-            margin: 15px auto 5px auto;
-            border: 2px solid #000000;
-            transition: transform 0.1s;
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border: 3px outset #ffffff;
+            outline: 2px solid #000000;
+            cursor: pointer;
+            box-sizing: border-box;
         }
 
-        .season-banner:active {
-            transform: scale(0.98);
+        .season-banner:hover {
+            outline-color: #ff0000;
         }
 
-        .season-container {
-            display: none; /* Ocultos por defecto */
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px dashed #000000;
-            background-color: #ffffff;
+        .season-banner.activa {
+            border-style: inset;
+            outline: 3px solid #000000;
+        }
+
+        #episodios-box {
+            display: none;
         }
 
         .episode-btn {
@@ -212,26 +214,27 @@
             <tr>
                 <td class="content-cell">
                     <h1 data-translate="ÍNDICE DE EPISODIOS">ÍNDICE DE EPISODIOS</h1>
-                    
+
+                    <!-- SELECTOR DE TEMPORADAS (BANNERS) -->
                     <div class="retro-box">
-                        <p style="margin: 0 0 10px 0; font-size: 13px; text-align: center;" data-translate="Haz clic en el banner de la temporada para ver los episodios:">Haz clic en el banner de la temporada para ver los episodios:</p>
+                        <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona una temporada:">Selecciona una temporada:</p>
+
+                        <img id="banner-t1" class="season-banner"
+                             src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada1.Banner.png"
+                             alt="Temporada 1" onclick="mostrarTemporada(1)">
+
+                        <img id="banner-t2" class="season-banner"
+                             src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada2.Banner.png"
+                             alt="Temporada 2" onclick="mostrarTemporada(2)">
+                    </div>
+
+                    <!-- LISTA DE EPISODIOS (aparece al picarle a un banner) -->
+                    <div class="retro-box" id="episodios-box">
+                        <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona un episodio para leerlo directamente en el sistema:">Selecciona un episodio para leerlo directamente en el sistema:</p>
                         
-                        <!-- BANNER TEMPORADA 1 -->
-                        <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada1.Banner.png" class="season-banner" onclick="toggleSeason('s1')" alt="Temporada 1">
-                        <div id="s1" class="season-container">
-                            <div id="lista-episodios-t1">
-                                <p style="font-style: italic; font-size: 12px;" data-translate="Cargando base de datos...">Cargando base de datos...</p>
-                            </div>
+                        <div id="lista-episodios">
+                            <p style="font-style: italic; font-size: 12px;" data-translate="Cargando base de datos...">Cargando base de datos...</p>
                         </div>
-
-                        <!-- BANNER TEMPORADA 2 -->
-                        <img src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada2.Banner.png" class="season-banner" onclick="toggleSeason('s2')" alt="Temporada 2">
-                        <div id="s2" class="season-container">
-                            <div id="lista-episodios-t2">
-                                <p style="font-style: italic; font-size: 12px;" data-translate="Próximamente...">Próximamente...</p>
-                            </div>
-                        </div>
-
                     </div>
 
                     <div id="reader-container"></div>
@@ -273,16 +276,6 @@
 
         const jsonUrl = 'EP/episodios.json';
         let currentLang = 'es';
-
-        // Función para mostrar/ocultar las listas de episodios al picar el banner
-        function toggleSeason(seasonId) {
-            const seasonDiv = document.getElementById(seasonId);
-            if (seasonDiv.style.display === "none" || seasonDiv.style.display === "") {
-                seasonDiv.style.display = "block";
-            } else {
-                seasonDiv.style.display = "none";
-            }
-        }
 
         // Función mágica que usa la API oculta de Google Translate
         async function traducirTexto(texto, targetLang) {
@@ -337,44 +330,55 @@
                 const textoOriginal = el.getAttribute('data-translate');
                 el.innerText = await traducirTexto(textoOriginal, currentLang);
             }
+        }
 
-            // Cargar los episodios desde el JSON
+        // Al picarle a un banner de temporada: carga el JSON y muestra solo los episodios de esa temporada
+        // (el campo "num" del JSON es tipo "t1/01": "t1" = temporada 1)
+        function mostrarTemporada(numTemporada) {
+            const prefijo = 't' + numTemporada;
+            const cajaEpisodios = document.getElementById('episodios-box');
+            const contenedorLista = document.getElementById('lista-episodios');
+            const reader = document.getElementById('reader-container');
+
+            // Marcar banner activo
+            document.querySelectorAll('.season-banner').forEach(b => b.classList.remove('activa'));
+            document.getElementById('banner-t' + numTemporada).classList.add('activa');
+
+            // Cerrar lector anterior
+            reader.style.display = 'none';
+            reader.innerText = '';
+
+            cajaEpisodios.style.display = 'block';
+            contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">...</p>';
+
             fetch(jsonUrl)
                 .then(response => {
                     if (!response.ok) throw new Error('No se encontró episodios.json');
                     return response.json();
                 })
                 .then(async data => {
-                    const contenedorT1 = document.getElementById('lista-episodios-t1');
-                    const contenedorT2 = document.getElementById('lista-episodios-t2');
-                    
-                    // Limpiamos los textos de "Cargando..."
-                    contenedorT1.innerHTML = ''; 
+                    contenedorLista.innerHTML = ''; 
 
-                    for (const episodio of data) {
+                    const delaTemporada = data.filter(ep => String(ep.num).split('/')[0] === prefijo);
+
+                    if (delaTemporada.length === 0) {
+                        contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
+                            await traducirTexto('Próximamente...', currentLang) + '</p>';
+                        return;
+                    }
+
+                    for (const episodio of delaTemporada) {
                         const tituloTraducido = await traducirTexto(episodio.EP, currentLang);
+                        const numero = String(episodio.num).split('/')[1] || episodio.num;
                         const boton = document.createElement('button');
                         boton.className = 'episode-btn';
                         boton.onclick = function() { cargarEpisodio(episodio.link); };
-                        
-                        // Extraemos solo el número final para que se vea limpio (ej: [EP 01])
-                        let numEpisodio = episodio.num.split('/')[1] || episodio.num;
-                        boton.innerHTML = `&gt;&gt; [EP ${numEpisodio}] ${tituloTraducido}`;
-                        
-                        // Separar los botones dependiendo de si en el JSON dicen "t1/..." o "t2/..."
-                        if (episodio.num.startsWith('t1')) {
-                            contenedorT1.appendChild(boton);
-                        } else if (episodio.num.startsWith('t2')) {
-                            // Si detecta episodios de la temporada 2, borra el "Próximamente..." y los mete ahí
-                            if (contenedorT2.innerHTML.includes('Próximamente')) {
-                                contenedorT2.innerHTML = ''; 
-                            }
-                            contenedorT2.appendChild(boton);
-                        }
+                        boton.innerHTML = `&gt;&gt; [EP ${numero}] ${tituloTraducido}`;
+                        contenedorLista.appendChild(boton);
                     }
                 })
                 .catch(error => {
-                    document.getElementById('lista-episodios-t1').innerHTML = '<p style="color: red;">Error cargando los capítulos.</p>';
+                    contenedorLista.innerHTML = '<p style="color: red;">Error cargando los capítulos.</p>';
                 });
         }
 
@@ -390,7 +394,7 @@
                 })
                 .then(async data => {
                     reader.innerText = await traducirTexto('Traduciendo texto...', currentLang);
-                    // Traduce el cuento y lo muestra
+                    // Aquí ocurre la magia: traduce el cuento completo de Carlos
                     const textoTraducido = await traducirTexto(data, currentLang);
                     reader.innerText = textoTraducido;
                 })
@@ -403,6 +407,8 @@
             localStorage.removeItem('idiomaChevy');
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('reader-container').style.display = 'none';
+            document.getElementById('episodios-box').style.display = 'none';
+            document.querySelectorAll('.season-banner').forEach(b => b.classList.remove('activa'));
             mostrarSelectorIdioma();
         }
     </script>
