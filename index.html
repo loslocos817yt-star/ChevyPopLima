@@ -101,16 +101,19 @@
         .retro-box {
             border: 2px solid #000000;
             background-color: #f0f0f0;
-            padding: 10px;
+            padding: 15px;
             margin-bottom: 15px;
         }
 
-        /* BANNERS DE TEMPORADA */
+        /* BANNERS DE TEMPORADA Y ACORDEON */
+        .season-group {
+            margin-bottom: 15px; /* Espacio entre cada bloque de temporada */
+        }
+
         .season-banner {
             display: block;
             width: 100%;
             height: auto;
-            margin-bottom: 10px;
             border: 3px outset #ffffff;
             outline: 2px solid #000000;
             cursor: pointer;
@@ -126,8 +129,13 @@
             outline: 3px solid #000000;
         }
 
-        #episodios-box {
+        /* CAJA DE EPISODIOS DEBAJO DEL BANNER */
+        .episodios-lista {
             display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8e8e8;
+            border: 2px dashed #000000;
         }
 
         .episode-btn {
@@ -135,7 +143,7 @@
             width: 100%;
             padding: 8px;
             margin-bottom: 5px;
-            background-color: #e0e0e0;
+            background-color: #dcdcdc;
             color: #000000;
             border: 2px outset #ffffff;
             text-align: left;
@@ -177,7 +185,6 @@
             margin-top: 20px;
         }
 
-        /* Contenedor del hit counter clásico */
         .counter-container {
             text-align: center;
             margin-top: 20px;
@@ -215,26 +222,32 @@
                 <td class="content-cell">
                     <h1 data-translate="ÍNDICE DE EPISODIOS">ÍNDICE DE EPISODIOS</h1>
 
-                    <!-- SELECTOR DE TEMPORADAS (BANNERS) -->
+                    <!-- SELECTOR DE TEMPORADAS (ACORDEÓN) -->
                     <div class="retro-box">
-                        <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona una temporada:">Selecciona una temporada:</p>
+                        <p style="margin: 0 0 15px 0; font-size: 13px; font-weight: bold;" data-translate="Selecciona una temporada:">Selecciona una temporada:</p>
 
-                        <img id="banner-t1" class="season-banner"
-                             src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada1.Banner.png"
-                             alt="Temporada 1" onclick="mostrarTemporada(1)">
+                        <!-- BLOQUE TEMPORADA 1 -->
+                        <div class="season-group">
+                            <img id="banner-t1" class="season-banner"
+                                 src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada1.Banner.png"
+                                 alt="Temporada 1" onclick="mostrarTemporada(1)">
+                            
+                            <!-- Lista de Episodios (Aparece abajo del banner T1) -->
+                            <div id="episodios-t1" class="episodios-lista"></div>
+                        </div>
 
-                        <img id="banner-t2" class="season-banner"
-                             src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada2.Banner.png"
-                             alt="Temporada 2" onclick="mostrarTemporada(2)">
+                        <!-- BLOQUE TEMPORADA 2 -->
+                        <div class="season-group">
+                            <img id="banner-t2" class="season-banner"
+                                 src="https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/assets/tempoarada2.Banner.png"
+                                 alt="Temporada 2" onclick="mostrarTemporada(2)">
+                            
+                            <!-- Lista de Episodios (Aparece abajo del banner T2) -->
+                            <div id="episodios-t2" class="episodios-lista"></div>
+                        </div>
                     </div>
 
-                    <!-- LISTA DE EPISODIOS (aparece al picarle a un banner) -->
-                    <div class="retro-box" id="episodios-box">
-                        <p style="margin: 0 0 10px 0; font-size: 13px;" data-translate="Selecciona un episodio para leerlo directamente en el sistema:">Selecciona un episodio para leerlo directamente en el sistema:</p>
-                        
-                        <div id="lista-episodios"></div>
-                    </div>
-
+                    <!-- LECTOR DE EPISODIOS -->
                     <div id="reader-container"></div>
 
                     <!-- CONTADOR DE VISITAS 90s -->
@@ -258,22 +271,18 @@
 
     <script>
         // ================== TODO SE CARGA POR RAW DE GITHUB ==================
-        // Así funciona aunque abras el HTML directo desde el celular/Termux.
         const RAW_BASE = 'https://raw.githubusercontent.com/loslocos817yt-star/ChevyPopLima/refs/heads/main/';
 
-        // El JSON (no cambia). Si falla el primero, prueba con el link github.com/raw.
         const JSON_URLS = [
             RAW_BASE + 'EP/episodios.json',
             'https://github.com/loslocos817yt-star/ChevyPopLima/raw/refs/heads/main/EP/episodios.json'
         ];
 
-        // Los "link" del JSON son relativos (EP/Anexo.txt): se convierten a RAW
         function urlRaw(link) {
             if (/^https?:\/\//i.test(link)) return link;
             return RAW_BASE + link.replace(/^\/+/, '');
         }
 
-        // Diccionario de idiomas solicitados
         const idiomas = {
             'es': 'Español',
             'en': 'Inglés',
@@ -290,9 +299,8 @@
 
         let currentLang = 'es';
 
-        // Función mágica que usa la API oculta de Google Translate
         async function traducirTexto(texto, targetLang) {
-            if (targetLang === 'es') return texto; // Si es español, no hace nada
+            if (targetLang === 'es') return texto; 
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${targetLang}&dt=t&q=${encodeURIComponent(texto)}`;
             try {
                 const res = await fetch(url);
@@ -300,12 +308,11 @@
                 return json[0].map(item => item[0]).join('');
             } catch (e) {
                 console.error("Error traduciendo:", e);
-                return texto; // Si falla, devuelve el texto original
+                return texto; 
             }
         }
 
         window.onload = function() {
-            // Revisar si ya hay un idioma guardado en el "localhost" (localStorage)
             let guardado = null;
             try { guardado = localStorage.getItem('idiomaChevy'); } catch (e) {}
             if (!guardado) {
@@ -338,7 +345,6 @@
             currentLang = lang;
             document.getElementById('main-content').style.display = 'block';
 
-            // Traducir toda la interfaz (UI)
             const elementosATraducir = document.querySelectorAll('[data-translate]');
             for (let el of elementosATraducir) {
                 const textoOriginal = el.getAttribute('data-translate');
@@ -346,7 +352,6 @@
             }
         }
 
-        // Descarga episodios.json por RAW (probando cada URL hasta que una funcione)
         async function cargarJSON() {
             let ultimoError = new Error('No se pudo cargar episodios.json');
             for (const url of JSON_URLS) {
@@ -361,34 +366,46 @@
             throw ultimoError;
         }
 
-        // Al picarle a un banner de temporada: muestra solo los episodios de esa temporada
-        // (el campo "num" del JSON es tipo "t1/01": "t1" = temporada 1)
         async function mostrarTemporada(numTemporada) {
             const prefijo = 't' + numTemporada;
-            const cajaEpisodios = document.getElementById('episodios-box');
-            const contenedorLista = document.getElementById('lista-episodios');
             const reader = document.getElementById('reader-container');
 
-            // Marcar banner activo
+            // 1. Limpiar e ocultar TODAS las listas de episodios y banners
             document.querySelectorAll('.season-banner').forEach(b => b.classList.remove('activa'));
+            document.querySelectorAll('.episodios-lista').forEach(el => {
+                el.style.display = 'none';
+                el.innerHTML = '';
+            });
+
+            // 2. Marcar banner clickeado como activo
             document.getElementById('banner-t' + numTemporada).classList.add('activa');
+            
+            // 3. Seleccionar la lista específica que va debajo de este banner
+            const contenedorLista = document.getElementById('episodios-t' + numTemporada);
+            contenedorLista.style.display = 'block';
 
             // Cerrar lector anterior
             reader.style.display = 'none';
             reader.innerText = '';
 
-            cajaEpisodios.style.display = 'block';
             contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
                 await traducirTexto('Cargando base de datos...', currentLang) + '</p>';
 
             try {
                 const data = await cargarJSON();
-                contenedorLista.innerHTML = '';
+                contenedorLista.innerHTML = ''; // Limpiar mensaje de carga
+
+                // Agregar el texto de instrucción en el idioma correcto
+                const instruccion = document.createElement('p');
+                instruccion.style.margin = '0 0 10px 0';
+                instruccion.style.fontSize = '13px';
+                instruccion.innerText = await traducirTexto('Selecciona un episodio para leerlo directamente en el sistema:', currentLang);
+                contenedorLista.appendChild(instruccion);
 
                 const delaTemporada = data.filter(ep => String(ep.num).split('/')[0] === prefijo);
 
                 if (delaTemporada.length === 0) {
-                    contenedorLista.innerHTML = '<p style="font-style: italic; font-size: 12px;">' +
+                    contenedorLista.innerHTML += '<p style="font-style: italic; font-size: 12px;">' +
                         await traducirTexto('Próximamente...', currentLang) + '</p>';
                     return;
                 }
@@ -412,6 +429,9 @@
             reader.style.display = 'block';
             reader.innerText = await traducirTexto('Descargando archivo clasificado...', currentLang);
 
+            // Bajar la vista automáticamente hacia el lector para mayor comodidad
+            reader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             fetch(urlRaw(link), { cache: 'no-store' })
                 .then(response => {
                     if (!response.ok) throw new Error('Archivo no encontrado.');
@@ -419,7 +439,6 @@
                 })
                 .then(async data => {
                     reader.innerText = await traducirTexto('Traduciendo texto...', currentLang);
-                    // Aquí ocurre la magia: traduce el cuento completo de Carlos
                     const textoTraducido = await traducirTexto(data, currentLang);
                     reader.innerText = textoTraducido;
                 })
@@ -432,11 +451,14 @@
             try { localStorage.removeItem('idiomaChevy'); } catch (e) {}
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('reader-container').style.display = 'none';
-            document.getElementById('episodios-box').style.display = 'none';
+            
+            document.querySelectorAll('.episodios-lista').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.season-banner').forEach(b => b.classList.remove('activa'));
+            
             mostrarSelectorIdioma();
         }
     </script>
 
 </body>
     </html>
+    
