@@ -1,27 +1,27 @@
 [
   {
    "EP": "Carro violador",
-   "num": "01",
+   "num": "t1/01",
    "link": "EP/carroviolador.txt"
   },
   {
     "EP": "Anexo",
-    "num": "02",
+    "num": "t1/02",
     "link": "EP/Anexo.txt"
   },
   {
     "EP": "Tinaco",
-    "num": "03",
+    "num": "t1/03",
     "link": "EP/Tinaco.txt"
   },
   {
     "EP": "Carlos El Mas Capito",
-    "num": "04",
+    "num": "t1/04",
     "link": "EP/CarlosElMasCapito.txt"
   },
   {
     "EP": "Jefrey",
-    "num": "05",
+    "num": "t1/05",
     "link": "EP/Jefrey.txt"
   }
 ]
